@@ -446,12 +446,48 @@ void Dali::set_level(uint8_t level, uint8_t adr) {
   if(_check_yaaaaaa(adr)) tx_wait_rx(adr<<1,level);
 }
 
-void Dali::setCCTbyTemp(uint8_t addr, uint16_t tempK) {
-    if (tempK < DALI_DT8_COLOR_TEMPERATURE_MIN) tempK = DALI_DT8_COLOR_TEMPERATURE_MIN;
-    if (tempK > DALI_DT8_COLOR_TEMPERATURE_MAX) tempK = DALI_DT8_COLOR_TEMPERATURE_MAX;
-    uint8_t perc = (uint32_t)(tempK - DALI_DT8_COLOR_TEMPERATURE_MIN) * 255
-                   / (DALI_DT8_COLOR_TEMPERATURE_MAX - DALI_DT8_COLOR_TEMPERATURE_MIN);
-    setCCTbyPercent(addr, perc);
+void Dali::setCCTbyTemp(uint8_t daliAddr, uint16_t kelvin) {
+    // Clamp Kelvin range
+    const uint16_t minK = 2700;
+    const uint16_t maxK = 6500;
+    kelvin = constrain(kelvin, minK, maxK);
+
+    // Your custom MIRED encoding: 0x00A0 (2700K) → 0x0190 (6500K)
+    const uint16_t minEnc = 0x00A0;
+    const uint16_t maxEnc = 0x0190;
+
+    // Linear scale from Kelvin to encoded MIRED
+    float scale = (float)(kelvin - minK) / (maxK - minK);
+    uint16_t mired = round(minEnc + scale * (maxEnc - minEnc));
+
+    uint8_t miredHigh = (mired >> 8) & 0xFF;
+    uint8_t miredLow  = mired & 0xFF;
+
+    // Determine if addr is short or group
+    uint8_t daliAddr = (addr < 0x80) ? ((addr << 1) | 1) : addr;
+
+    // Send high byte (C3)
+    tx_wait_rx(0xC3, miredHigh);
+    delay(5);
+
+    // Send low byte (A3)
+    tx_wait_rx(0xA3, miredLow);
+    delay(5);
+
+    // Apply to fixed short address 4
+    tx_wait_rx(0xC1, 0x08);
+    delay(5);
+
+    // Group or short trigger 1
+    tx_wait_rx(daliAddr, 0xE7);
+    delay(5);
+
+    // Reapply
+    tx_wait_rx(0xC1, 0x08);
+    delay(5);
+
+    // Trigger 2
+    tx_wait_rx(daliAddr, 0xE2);
 }
 
 void Dali::setCCTbyPercent(uint8_t addr, uint8_t perc) {
