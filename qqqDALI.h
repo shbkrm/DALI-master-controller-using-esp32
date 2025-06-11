@@ -47,6 +47,11 @@ Changelog:
 #define DALI_TX_COLLISSION_OFF 1  //don't handle tx collisions
 #define DALI_TX_COLLISSION_ON 2   //handle all tx collisions
 
+// Color Type 001: Device Dependent Color Control
+#define DALI_DT8_COLOR_TEMPERATURE     0b01100010
+#define DALI_DT8_COLOR_TEMPERATURE_MIN 2700
+#define DALI_DT8_COLOR_TEMPERATURE_MAX 6500
+
 #define DALI_RX_BUF_SIZE 40
 
 class Dali {
@@ -73,6 +78,8 @@ public:
   uint8_t  set_power_on_level(uint8_t v, uint8_t adr=0xFF); //returns 0 on success 
   uint8_t  tx_wait(uint8_t* data, uint8_t bitlen, uint16_t timeout_ms=500); //blocking transmit bytes
   int16_t  tx_wait_rx(uint8_t cmd0, uint8_t cmd1, uint16_t timeout_ms=500); //blocking transmit and receive
+  void setCCTbyTemp(uint8_t shortAddress, uint16_t temperatureK);
+  void setCCTbyPercent(uint8_t shortAddress, uint8_t colorPercent);
 
   uint8_t read_memory_bank(uint8_t bank, uint8_t adr);
   uint8_t set_dtr0(uint8_t value, uint8_t adr);
@@ -87,7 +94,7 @@ public:
   void     program_short_address(uint8_t shortadr);
   uint8_t  query_short_address();
   uint32_t find_addr();
-  
+
 private:
   //-------------------------------------------------
   //LOW LEVEL DRIVER PRIVATE
