@@ -446,6 +446,24 @@ void Dali::set_level(uint8_t level, uint8_t adr) {
   if(_check_yaaaaaa(adr)) tx_wait_rx(adr<<1,level);
 }
 
+void Dali::setCCTbyTemp(uint8_t addr, uint16_t tempK) {
+    if (tempK < DALI_DT8_COLOR_TEMPERATURE_MIN) tempK = DALI_DT8_COLOR_TEMPERATURE_MIN;
+    if (tempK > DALI_DT8_COLOR_TEMPERATURE_MAX) tempK = DALI_DT8_COLOR_TEMPERATURE_MAX;
+    uint8_t perc = (uint32_t)(tempK - DALI_DT8_COLOR_TEMPERATURE_MIN) * 255
+                   / (DALI_DT8_COLOR_TEMPERATURE_MAX - DALI_DT8_COLOR_TEMPERATURE_MIN);
+    setCCTbyPercent(addr, perc);
+}
+
+void Dali::setCCTbyPercent(uint8_t addr, uint8_t perc) {
+    uint8_t cmd1 = 0x11 | (addr << 1); // short address in CMD1 (e.g., type)
+    uint8_t cmd2 = DALI_DT8_COLOR_TEMPERATURE;
+    transmit(cmd1, cmd2);
+    delay(10);
+    cmd1 = 0x11 | (addr << 1);
+    cmd2 = perc;
+    transmit(cmd1, cmd2);
+}
+
 int16_t Dali::cmd(uint16_t cmd, uint8_t arg) {
   //Serial.print("dali_cmd[");Serial.print(cmd,HEX);Serial.print(",");Serial.print(arg,HEX);Serial.print(")");
   uint8_t cmd0,cmd1;
