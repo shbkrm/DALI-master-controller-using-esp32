@@ -458,7 +458,7 @@ void Dali::setCCTbyPercent(uint8_t addr, uint8_t perc) {
     uint8_t cmd1 = 0x11 | (addr << 1); // short address in CMD1 (e.g., type)
     uint8_t cmd2 = DALI_DT8_COLOR_TEMPERATURE;
     tx_wait_rx(cmd1, cmd2);               
-    delay(10);
+    //delay(10);
     cmd1 = 0x11 | (addr << 1);
     cmd2 = perc;
     tx_wait_rx(cmd1, cmd2);
