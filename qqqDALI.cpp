@@ -446,15 +446,14 @@ void Dali::set_level(uint8_t level, uint8_t adr) {
   if(_check_yaaaaaa(adr)) tx_wait_rx(adr<<1,level);
 }
 
-void Dali::setCCTbyTemp(uint8_t daliAddr, uint16_t kelvin) {
+void Dali::setCCTbyTemp(uint8_t addr, uint16_t kelvin) {
     // Clamp Kelvin range
     const uint16_t minK = 2700;
     const uint16_t maxK = 6500;
     kelvin = constrain(kelvin, minK, maxK);
 
-    // Your custom MIRED encoding: 0x00A0 (2700K) → 0x0190 (6500K)
-    const uint16_t minEnc = 0x00A0;
-    const uint16_t maxEnc = 0x0190;
+    const uint16_t minEnc = 0x0190;
+    const uint16_t maxEnc = 0x00A0;
 
     // Linear scale from Kelvin to encoded MIRED
     float scale = (float)(kelvin - minK) / (maxK - minK);
