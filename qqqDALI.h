@@ -78,8 +78,10 @@ public:
   uint8_t  set_power_on_level(uint8_t v, uint8_t adr=0xFF); //returns 0 on success 
   uint8_t  tx_wait(uint8_t* data, uint8_t bitlen, uint16_t timeout_ms=500); //blocking transmit bytes
   int16_t  tx_wait_rx(uint8_t cmd0, uint8_t cmd1, uint16_t timeout_ms=500); //blocking transmit and receive
+ 
   void setCCTbyTemp(uint8_t shortAddress, uint16_t temperatureK);
   void setCCTbyPercent(uint8_t shortAddress, uint8_t colorPercent);
+  void setFade(uint8_t shortAddr, uint8_t fadeRate, uint8_t fadeTime);
 
   uint8_t read_memory_bank(uint8_t bank, uint8_t adr);
   uint8_t set_dtr0(uint8_t value, uint8_t adr);
