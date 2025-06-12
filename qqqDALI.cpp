@@ -499,6 +499,18 @@ void Dali::setCCTbyPercent(uint8_t addr, uint8_t perc) {
     tx_wait_rx(cmd1, cmd2);
 }
 
+void Dali::setFade(uint8_t shortAddr, uint8_t fadeRate, uint8_t fadeTime) {
+    // Set fade rate (0–15)
+    tx_wait_rx(0xA3, constrain(fadeRate, 0, 15));
+    tx_wait_rx((shortAddr << 1) | 1, 0xB6);
+    delay(5);
+
+    // Set fade time (0–15)
+    tx_wait_rx(0xA3, constrain(fadeTime, 0, 15));
+    tx_wait_rx((shortAddr << 1) | 1, 0xB2);
+    delay(5);
+}
+
 int16_t Dali::cmd(uint16_t cmd, uint8_t arg) {
   //Serial.print("dali_cmd[");Serial.print(cmd,HEX);Serial.print(",");Serial.print(arg,HEX);Serial.print(")");
   uint8_t cmd0,cmd1;
